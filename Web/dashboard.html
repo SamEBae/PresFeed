@@ -1,22 +1,37 @@
 <!DOCTYPE html>
 <html data-ng-app="app" ng-csp="">
 <head>
-<meta charset="utf-8" />
-<title>PresFeed</title>
-<link rel="stylesheet" media="all" href="css/bootstrap.min.css">
-<link rel="stylesheet" media="all" href="css/main.css">
-<base target="_blank">
+  <meta charset="utf-8" />
+  <title>PresFeed</title>
+  <link rel="stylesheet" media="all" href="css/bootstrap.min.css">
+  <link rel="stylesheet" media="all" href="css/main.css">
+  <link rel="stylesheet" media="all" href="css/nv.d3.css">
+  <base target="_blank">
 </head>
-<body data-ng-controller="defaultController">
+<body data-ng-controller="dashboardController">
   <section id="main">
-  	<button ng-click="createSession()">Create Session</button>
-  	<h1 ng-show="sessionCreated">
-  	 <a ng-href="dashboard.html?id={{sessionId}}" target="_blank">Session Created</a></h1>
-  	<input type="text" ng-model="sessionId">
+    <nvd3-pie-chart
+        height="200"
+        width="200"
+        data="exampleData"
+        id="exampleId"
+        x="xFunction()"
+        y="yFunction()"
+        showLabels="true"
+        labelsOutside="false"
+        showValues="true"
+        labelType="percent"
+        ng-show="pieMode">
+        <svg></svg>
+    </nvd3-pie-chart>
   </section>
   <script src="js/angular.min.js"></script>
   <script src="js/angular-route.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/d3.js"></script>
+  <script src="js/nv.d3.js"></script>
+  <script src="js/angularjs-nvd3-directives.js"></script>
   <script src="js/dirPagination.js"></script>
+  <script src="js/app.js"></script>
+
 </body>
 </html>

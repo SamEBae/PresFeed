@@ -1,4 +1,4 @@
-var app = angular.module('app', ['angularUtils.directives.dirPagination','ngRoute']);
+var app = angular.module('app', ['angularUtils.directives.dirPagination','ngRoute','nvd3ChartDirectives']);
 
 app.config(['$routeProvider',
   function($routeProvider) {
@@ -30,5 +30,52 @@ app.controller('defaultController', function($scope, $http) {
 });
 
 app.controller('dashboardController', function($scope, $http){
-	
+	$scope.pieMode = true;
+	$scope.exampleData = [
+            {
+                key: "One",
+                y: 5
+            },
+            {
+                key: "Two",
+                y: 2
+            },
+            {
+                key: "Three",
+                y: 9
+            },
+            {
+                key: "Four",
+                y: 7
+            },
+            {
+                key: "Five",
+                y: 4
+            },
+            {
+                key: "Six",
+                y: 3
+            },
+            {
+                key: "Seven",
+                y: 9
+            }
+        ];
+
+    $scope.xFunction = function(){
+        return function(d) {
+            return d.key;
+        };
+    }
+    $scope.yFunction = function(){
+        return function(d) {
+            return d.y;
+        };
+    }
+
+    $scope.descriptionFunction = function(){
+        return function(d){
+            return d.key;
+        }
+    }
 });
