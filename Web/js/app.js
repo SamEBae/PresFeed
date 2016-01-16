@@ -79,3 +79,21 @@ app.controller('dashboardController', function($scope, $http){
         }
     }
 });
+
+
+app.controller('joinController', function($scope, $http, $routeParams){
+
+	$scope.joinSession = function(){
+		//alert("joining session");
+		$http({
+		  method: 'GET',
+		  url: 'http://159.203.9.155/presenters'
+		}).then(function successCallback(response) {
+		    console.log(response);
+	  	}, function errorCallback(response) {
+	    	// called asynchronously if an error occurs
+	    	// or server returns response with an error status.
+	  	});
+
+	}
+});
