@@ -1,5 +1,11 @@
 var app = angular.module('app', ['angularUtils.directives.dirPagination','ngRoute','nvd3ChartDirectives']);
 
+app.config(function ($httpProvider) {
+  $httpProvider.defaults.headers.common = {};
+  $httpProvider.defaults.headers.post = {};
+  $httpProvider.defaults.headers.put = {};
+  $httpProvider.defaults.headers.patch = {};
+});
 app.config(['$routeProvider',
   function($routeProvider, $httpProvider) {
     $routeProvider.
@@ -107,7 +113,7 @@ app.controller('joinController', function($scope, $http, $routeParams){
 		    }
 		    $http.post("http://159.203.9.155/observers/",data).success(function(response, status){
 		    	$scope.connectedId = response.id;
-		    	console.log(response)
+		    	console.log(response.id)
 		    });
 	  	}, function errorCallback(response) {
 	    	alert("Invalid Session ID");
@@ -129,7 +135,7 @@ app.controller('joinController', function($scope, $http, $routeParams){
 	      data    : data,
 	      headers : { 'Content-Type': 'application/json' }
 	    })
-	    .success(function(response){
+	    .then(function(response){
 	    	console.log(response);
 	    });
 
