@@ -17,15 +17,26 @@ app.config(['$routeProvider',
   }]);
 
 app.controller('defaultController', function($scope, $http) {
+    
 	$scope.sessionCreated = false;
-	$scope.sessionId = 12;
 	console.log($scope.sessionCreated);
+
 	$scope.createSession = function(){
-	 	$http.get('http://httpbin.org/get', {cache: null})
+        var session_url = 'http://159.203.9.155/presenters'
+        // create session
+        $http.post(session_url)
 	 	.success(function(response){
+
         	$scope.sessionCreated = true;
-        	$scope.sessionId = 99;
+            // find created session
+            $http.get(session_url)
+            .success(function(response){
+                console.log(response);
+                $scope.sessionId = response[response.length-1].id;
+            }
+            )
     	});
+
 	}
 });
 

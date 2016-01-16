@@ -12,8 +12,9 @@
   <section id="main">
   	<button ng-click="createSession()">Create Session</button>
   	<h1 ng-show="sessionCreated">
-  	 <a ng-href="dashboard.html?id={{sessionId}}" target="_blank">Session Created</a></h1>
-  	<input type="text" ng-model="sessionId">
+     <label>Your session ID is: {{sessionId}}</label>
+     <br>
+  	 <a ng-href="dashboard.html?id={{sessionId}}" target="_blank">Click here to go to session</a></h1>
   </section>
   <script src="js/angular.min.js"></script>
   <script src="js/angular-route.js"></script>
