@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
   <!-- Compiled and minified JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-beta1/jquery.js"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
   <base target="_blank">
 </head>
@@ -26,19 +27,40 @@
   </nav>
   <section id="main">
   <div class="row">
-    <form class="col s12">
+    <form class="col s12" ng-show="!joined">
       <div class="row">
         <div class="input-field col s6">
-          <input id="session_id" type="text" class="validate">
+          <input id="session_id" type="text" class="validate" ng-model="id">
           <label for="session_id">Session Id</label>
         </div>
-        <div class="input-field col s6">
+        <span ng-show="joinError"><a class="waves-effect waves-light btn red">Could not connect to session</a></span>
+      <span ng-show="joining">
+        <i class="material-icons">av_timer</i>
+        <p>Joining...</p>
+      </span>
+    <!--     <div class="input-field col s6">
           <input id="nick_name" type="text" class="validate">
           <label for="nick_name">Nick Name</label>
-        </div>
+        </div> -->
       </div>
       <a class="waves-effect waves-light btn" ng-click="joinSession()"><i class="material-icons left"></i>Join</a>
     </form>
+    <div ng-show="joined">
+      <div class="row">
+        <p> Connected to Session: {{connectedId}}</p>
+      </div>
+      <form id="pres-feedback">
+        <p ng-repeat="question in questions">
+          <input type="radio" class="filled-in" ng-model="questionStatus" value="{{question}}" name="questions" id="filled-in-box{{$index}}" ng-click="questionChanged($index)" checked="questionCheck($index)" />
+          <label for="filled-in-box{{$index}}">{{question}}</label>
+          <!-- <label>{{question}}
+            <input type="radio" ng-model="$questionStatus" name="name" value="{{question}}" />
+          </label> -->
+          
+        </p>
+      </form>
+    </div>
+
   </div>
   </section>
   <script src="js/angular.min.js"></script>

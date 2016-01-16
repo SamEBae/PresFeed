@@ -1,7 +1,7 @@
 var app = angular.module('app', ['angularUtils.directives.dirPagination','ngRoute','nvd3ChartDirectives']);
 
 app.config(['$routeProvider',
-  function($routeProvider) {
+  function($routeProvider, $httpProvider) {
     $routeProvider.
       when('/session', {
         templateUrl: 'main.html',
@@ -94,18 +94,64 @@ app.controller('dashboardController', function($scope, $http){
 
 
 app.controller('joinController', function($scope, $http, $routeParams){
+	$scope.id = 2; //change later
+	$scope.connectedId 	= null;
+	$scope.joined  		= false;
+	$scope.joining 		= false; 
+	$scope.joinError 	= false;
+	$scope.questions = ["Poor", "Insufficient", "Average", "Good", "Excellent"];
 
 	$scope.joinSession = function(){
-		//alert("joining session");
-		$http({
-		  method: 'GET',
-		  url: 'http://159.203.9.155/presenters'
-		}).then(function successCallback(response) {
-		    console.log(response);
-	  	}, function errorCallback(response) {
-	    	// called asynchronously if an error occurs
-	    	// or server returns response with an error status.
-	  	});
+		$scope.joining = true;
 
+		console.log('http://159.203.9.155/presenters/'+$scope.id);
+		
+		$http.get('http://159.203.9.155/presenters/'+$scope.id).then(function successCallback(response) {
+		    var presenterId = response.id;
+		    $scope.joined 	= true;
+		    $scope.joinError= false
+		    $scope.joining	= false;
+		    var data = {
+		    	"observer":{
+				      "status":2,
+				      "presenter_id":$scope.id
+				   	}
+		    }
+		    $http.post("http://159.203.9.155/observers/",data).success(function(response, status){
+		    	$scope.connectedId = response.id;
+		    	console.log(response)
+		    });
+	  	}, function errorCallback(response) {
+	    	alert("Invalid Session ID");
+	    	$scope.joinError= true;
+	  		$scope.joining	= false;
+	  	});
+	}
+
+	$scope.questionChanged = function(index){
+		var data = {
+	    	"observer":{
+		    	"status":index
+		   	}
+	    };
+
+	    $http({
+	      method  : "PUT",
+	      url     : 'http://159.203.9.155/observers/'+$scope.connectedId,
+	      data    : data,
+	      headers : { 'Content-Type': 'application/json' }
+	    })
+	    .success(function(response){
+	    	console.log(response);
+	    });
+
+
+	    //$http.put("http://159.203.9.155/observers/2",data).success(function(response, status){});
+	    //$http.put("http://159.203.9.155/observers/5",data).success(function(response, status){});
+		// $http.put("http://159.203.9.155/observers/10",data).success(function(response, status){});
+		// $http.put("http://159.203.9.155/observers/16",data).success(function(response, status){});
+		// $http.put("http://159.203.9.155/observers/"+$scope.connectedId,data).success(function(response, status){});
 	}
 });
+
+
