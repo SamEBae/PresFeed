@@ -43,6 +43,7 @@ app.controller('dashboardController', function($scope, $http, serverService){
 	$scope.errorMessage = false;
 	$scope.url 			= window.location.href;
 	$scope.sessionId 	= $scope.url.substring($scope.url.indexOf("?id")+4,$scope.url.length);
+    $scope.audienceSize = 0;
 	$scope.observerData = [
 		{
 			key: 'Poor',
@@ -54,7 +55,7 @@ app.controller('dashboardController', function($scope, $http, serverService){
 		},
 		{
 			key: 'Average',
-			value: 1
+			value: 0.1
 		},
 		{
 			key: 'Good',
@@ -70,6 +71,7 @@ app.controller('dashboardController', function($scope, $http, serverService){
 		if(response.success===false){
 			$scope.errorMessage = true;
 		}
+        $scope.audienceSize = response.length;
 		for(var index in response){
 			if(response[index].status<5){
 				$scope.observerData[response[index].status].value++;
@@ -132,7 +134,7 @@ app.controller('dashboardController', function($scope, $http, serverService){
 
 
 app.controller('joinController', function($scope, $http, $routeParams, serverService){
-	$scope.id; //change later
+	$scope.joinId; //change later
 	$scope.connectedId 	= null;
 	$scope.joined  		= false;
 	$scope.joining 		= false; 
@@ -142,8 +144,13 @@ app.controller('joinController', function($scope, $http, $routeParams, serverSer
 	$scope.joinSession = function(){
 		$scope.joining = true;
 
-		serverService.getPresenterById($scope.id).then(function(response){
-
+		serverService.getPresenterById($scope.joinId).then(function(response){
+			if(response.success===false){
+				alert("Invalid Session ID");
+    			$scope.joinError= true;
+  				$scope.joining	= false;
+  				return;
+			}
 			var presenterId = response.id;
 		    $scope.joined 	= true;
 		    $scope.joinError= false
@@ -151,18 +158,13 @@ app.controller('joinController', function($scope, $http, $routeParams, serverSer
 		    var data = {
 		    	"observer":{
 				      "status":2,
-				      "presenter_id":$scope.id
+				      "presenter_id":$scope.joinId
 				   	}
 		    }
 
 		    serverService.createObserver(data).then(function(response){
 		    	$scope.connectedId = response.id;
 		    });
-		},
-		function errorCallback(response){	
-	    	alert("Invalid Session ID");
-    		$scope.joinError= true;
-  			$scope.joining	= false;
 		})
 	}
 
