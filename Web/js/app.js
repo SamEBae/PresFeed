@@ -131,7 +131,7 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
             ]
         }
     ];
-}).directive('nvd3PieChart', ['$interval', 'dateFilter',
+}).directive('myCurrentTime', ['$interval', 'dateFilter',
     function($interval, dateFilter) {
         // return the directive link function. (compile function not needed)
         return function(scope, element, attrs) {
