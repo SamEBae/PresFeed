@@ -72,7 +72,8 @@ app.controller('dashboardController', function($scope, $http, serverService){
 			$scope.errorMessage = true;
 		}
         $scope.audienceSize = response.length;
-		for(var index in response){
+		$scope.observerData[2].value =0;
+        for(var index in response){
 			if(response[index].status<5){
 				$scope.observerData[response[index].status].value++;
 			}
