@@ -7,14 +7,22 @@
 <link rel="stylesheet" media="all" href="css/main.css">
 <link rel="stylesheet" media="all" href="css/nv.d3.css">
 <base target="_blank">
+<style>
+h1.hidden {
+    display: none;
+    }
+</style>
 </head>
 <body data-ng-controller="defaultController">
   <section id="main">
   	<button ng-click="createSession()">Create Session</button>
+    
   	<h1 ng-show="sessionCreated">
-     <label>Your session ID is: {{sessionId}}</label>
-     <br>
-  	 <a ng-href="dashboard.html?id={{sessionId}}" target="_blank">Click here to go to session</a></h1>
+    <p class="text-center">
+      <label>Your session ID is: {{sessionId}}</label>
+      <br>
+  	 <a ng-href="dashboard.html?id={{sessionId}}" target="_blank">Go to session</a>
+     </p></h1>
   </section>
   <script src="js/angular.min.js"></script>
   <script src="js/angular-route.js"></script>
