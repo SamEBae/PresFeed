@@ -118,16 +118,16 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
         }
     }
 }).directive('nvd3PieChart', ['$interval', 'dateFilter',
-      function($interval, dateFilter) {
+    function($interval, dateFilter) {
         // return the directive link function. (compile function not needed)
         return function(scope, element, attrs) {
-          var format,  // date format
+            var format,  // date format
               stopTime; // so that we can cancel the time updates
 
-          // used to update the UI
-          function checkNotification() {
-            // Call notification if threshold is broken.
-            
+        // used to update the UI
+        function checkNotification() {
+        // Call notification if threshold is broken.
+
             observerDataCopy = scope.observerDataCopy;
             var totalUsers = 0;
             var unsatisfied = 0;
@@ -154,23 +154,23 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
 
                 var sound = notification.sound;
             }
-          }
+        }
 
-          // watch the expression, and update the UI on change.
-          scope.$watch(attrs.nvd3PieChart, function(value) {
+        // watch the expression, and update the UI on change.
+        scope.$watch(attrs.nvd3PieChart, function(value) {
             format = value;
             checkNotification();
-          });
+        });
 
-          stopTime = $interval(checkNotification, 5000);
+        stopTime = $interval(checkNotification, 5000);
 
-          // listen on DOM destroy (removal) event, and cancel the next UI update
-          // to prevent updating time after the DOM element was removed.
-          element.on('$destroy', function() {
+        // listen on DOM destroy (removal) event, and cancel the next UI update
+        // to prevent updating time after the DOM element was removed.
+        element.on('$destroy', function() {
             $interval.cancel(stopTime);
-          });
-        }
-      }]);
+        });
+    }
+}]);
 
 app.controller('joinController', function($scope, $http, $routeParams, serverService){
 	$scope.joinId; //change later
