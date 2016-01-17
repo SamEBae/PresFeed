@@ -54,6 +54,14 @@
     
     <h3 id="your-dashboard" ng-if="!errorMessage">Presentation Statistics</h3>
     <h4 ng-if="!errorMessage">Audience size: {{audienceSize}}</h4>
+<!--     <nvd3-discrete-bar-chart
+            data="totalData"
+            showXAxis="true"
+            showYAxis="true"
+            showValues="true"
+            showLegend="true"
+            >
+    </nvd3-discrete-bar-chart> -->
     <nvd3-pie-chart
         height="150px"
         width="150px"
@@ -69,7 +77,6 @@
         ng-if="!errorMessage">
         <svg></svg>
     </nvd3-pie-chart>
-
   </section>
   <script src="js/angular.min.js"></script>
   <script src="js/angular-route.js"></script>

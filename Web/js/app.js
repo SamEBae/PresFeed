@@ -70,32 +70,38 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
 	];
 	$scope.observerDataCopy = $scope.observerData.slice();
 
-    serverService.getPresenterById($scope.sessionId).then(function(response){
-        if(response.success===false){
-            $scope.errorMessage = true;
-            return;
-        }
-        serverService.getAllObserversById($scope.sessionId).then(function(response){
-            console.log(response);
-            if(response.success==false){
-                $scope.audienceSize = 0;
-                return;   
+    $interval(function() {
+        serverService.getPresenterById($scope.sessionId).then(function(response){
+            if(response.success===false){
+                $scope.errorMessage = true;
+                return;
             }
-
-            $scope.audienceSize = response.length;
-            $scope.observerData[2].value =0;
-            for(var index in response){
-                if(response[index].status<5){
-                    $scope.observerData[response[index].status].value++;
+            serverService.getAllObserversById($scope.sessionId).then(function(response){
+                if(response.success==false){
+                    $scope.audienceSize = 0;
+                    return;   
                 }
-            }
-            $scope.observerDataCopy = $scope.observerData;
-        },function handleError(response){
-            alert("error getting observers");
+
+                $scope.audienceSize = response.length;
+                $scope.observerData[2].value =0;
+
+                for(var index in $scope.observerData){
+                    $scope.observerData[index].value = 0;
+                }
+
+                for(var index in response){
+                    if(response[index].status<5){
+                        $scope.observerData[response[index].status].value++;
+                    }
+                }
+                $scope.observerDataCopy = $scope.observerData;
+            },function handleError(response){
+                alert("error getting observers");
+            });
         });
-    });
-    
-	$scope.pieMode = true;
+    }, 5000);
+	
+    $scope.pieMode = true;
     $scope.xFunction = function(){
         return function(d) {
             return d.key;
@@ -111,32 +117,46 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
             return d.key;
         }
     }
-}).directive('myCurrentTime', ['$interval', 'dateFilter',
-      function($interval, dateFilter) {
+
+    $scope.totalDataCopy =$scope.totalData;
+    $scope.totalData = [
+      {
+            key: "Cumulative Return",
+            values: [
+                ["Poor", 0 ],
+                ["Insufficient" , 0 ],
+                ["Average" , 0 ],
+                ["Good" , 0 ],
+                ["Excellent" , 0 ]
+            ]
+        }
+    ];
+}).directive('nvd3PieChart', ['$interval', 'dateFilter',
+    function($interval, dateFilter) {
         // return the directive link function. (compile function not needed)
         return function(scope, element, attrs) {
-          var format,  // date format
+            var format,  // date format
               stopTime; // so that we can cancel the time updates
 
-          // used to update the UI
-          function checkNotification() {
-            // Call notification if threshold is broken.
-            
+        // used to update the UI
+        function checkNotification() {
+        // Call notification if threshold is broken.
+
             observerDataCopy = scope.observerDataCopy;
-            var totalUsers = observerDataCopy.length;
+            var totalUsers = 0;
             var unsatisfied = 0;
             var limitPercentage = 0.3;
 
             for (var index in observerDataCopy){
-                console.log(observerDataCopy[index]);
-                if(observerDataCopy[index].value < 1) {
-                    unsatisfied++;
+                if(observerDataCopy[index].key == 'Poor' || observerDataCopy[index].key == 'Insufficient') {
+                    unsatisfied += observerDataCopy[index].value;
                 }
+                totalUsers += observerDataCopy[index].value;
             }
 
             console.log("Stats: " + unsatisfied / totalUsers);
 
-            if (unsatisfied / totalUsers > limitPercentage || unsatisfied / totalUsers == 0.8) {
+            if (unsatisfied / totalUsers > limitPercentage) {
                 // Notificaiton here
                 var options = {
                   sound: 'audio/alert.mp3',
@@ -148,23 +168,23 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
 
                 var sound = notification.sound;
             }
-          }
+        }
 
-          // watch the expression, and update the UI on change.
-          scope.$watch(attrs.myCurrentTime, function(value) {
+        // watch the expression, and update the UI on change.
+        scope.$watch(attrs.nvd3PieChart, function(value) {
             format = value;
             checkNotification();
-          });
+        });
 
-          stopTime = $interval(checkNotification, 5000);
+        stopTime = $interval(checkNotification, 5000);
 
-          // listen on DOM destroy (removal) event, and cancel the next UI update
-          // to prevent updating time after the DOM element was removed.
-          element.on('$destroy', function() {
+        // listen on DOM destroy (removal) event, and cancel the next UI update
+        // to prevent updating time after the DOM element was removed.
+        element.on('$destroy', function() {
             $interval.cancel(stopTime);
-          });
-        }
-      }]);
+        });
+    }
+}]);
 
 app.controller('joinController', function($scope, $http, $routeParams, serverService){
 	$scope.joinId; //change later
