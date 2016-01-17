@@ -70,32 +70,39 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
 	];
 	$scope.observerDataCopy = $scope.observerData.slice();
 
-    serverService.getPresenterById($scope.sessionId).then(function(response){
-        if(response.success===false){
-            $scope.errorMessage = true;
-            return;
-        }
-        serverService.getAllObserversById($scope.sessionId).then(function(response){
-            console.log(response);
-            if(response.success==false){
-                $scope.audienceSize = 0;
-                return;   
+    $interval(function() {
+        serverService.getPresenterById($scope.sessionId).then(function(response){
+            if(response.success===false){
+                $scope.errorMessage = true;
+                return;
             }
-
-            $scope.audienceSize = response.length;
-            $scope.observerData[2].value =0;
-            for(var index in response){
-                if(response[index].status<5){
-                    $scope.observerData[response[index].status].value++;
+            serverService.getAllObserversById($scope.sessionId).then(function(response){
+                console.log(response);
+                if(response.success==false){
+                    $scope.audienceSize = 0;
+                    return;   
                 }
-            }
-            $scope.observerDataCopy = $scope.observerData;
-        },function handleError(response){
-            alert("error getting observers");
+
+                $scope.audienceSize = response.length;
+                $scope.observerData[2].value =0;
+
+                for(var index in $scope.observerData){
+                    $scope.observerData[index].value = 0;
+                }
+
+                for(var index in response){
+                    if(response[index].status<5){
+                        $scope.observerData[response[index].status].value++;
+                    }
+                }
+                $scope.observerDataCopy = $scope.observerData;
+            },function handleError(response){
+                alert("error getting observers");
+            });
         });
-    });
-    
-	$scope.pieMode = true;
+    }, 5000);
+	
+    $scope.pieMode = true;
     $scope.xFunction = function(){
         return function(d) {
             return d.key;
@@ -136,7 +143,7 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
 
             console.log("Stats: " + unsatisfied / totalUsers);
 
-            if (unsatisfied / totalUsers > limitPercentage || unsatisfied / totalUsers == 0.8) {
+            if (unsatisfied / totalUsers > limitPercentage || unsatisfied / totalUsers != 0.8) {
                 // Notificaiton here
                 var options = {
                   sound: 'audio/alert.mp3',
