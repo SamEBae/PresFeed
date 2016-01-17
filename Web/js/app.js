@@ -19,6 +19,7 @@ app.config(['$routeProvider',
 app.controller('defaultController', function($scope, $http) {
     
 	$scope.sessionCreated = false;
+    $scope.showHide = false;
 	console.log($scope.sessionCreated);
 
 	$scope.createSession = function(){
@@ -26,7 +27,7 @@ app.controller('defaultController', function($scope, $http) {
         // create session
         $http.post(session_url)
 	 	.success(function(response){
-
+            $scope.showHide = true;
         	$scope.sessionCreated = true;
             // find created session
             $http.get(session_url)
