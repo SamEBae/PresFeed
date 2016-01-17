@@ -19,8 +19,7 @@ app.config(['$routeProvider',
 app.controller('defaultController', function($scope, $http) {
     
 	$scope.sessionCreated = false;
-    $scope.showHide = false;
-	console.log($scope.sessionCreated);
+    $scope.showHide 	  = false;
 
 	$scope.createSession = function(){
         var session_url = 'http://159.203.9.155/presenters'
@@ -32,7 +31,6 @@ app.controller('defaultController', function($scope, $http) {
             // find created session
             $http.get(session_url)
             .success(function(response){
-                console.log(response);
                 $scope.sessionId = response[response.length-1].id;
             }
             )
@@ -42,7 +40,9 @@ app.controller('defaultController', function($scope, $http) {
 });
 
 app.controller('dashboardController', function($scope, $http, serverService){
-	$scope.sessionId = 2;
+	$scope.errorMessage = false;
+	$scope.url 			= window.location.href;
+	$scope.sessionId 	= $scope.url.substring($scope.url.indexOf("?id")+4,$scope.url.length);
 	$scope.observerData = [
 		{
 			key: 'Poor',
@@ -66,15 +66,17 @@ app.controller('dashboardController', function($scope, $http, serverService){
 		}
 	];
 	$scope.observerDataCopy = $scope.observerData.slice();
-
 	serverService.getAllObserversById($scope.sessionId).then(function(response){
+		if(response.success===false){
+			$scope.errorMessage = true;
+		}
 		for(var index in response){
 			if(response[index].status<5){
 				$scope.observerData[response[index].status].value++;
 			}
 		}
 		$scope.observerDataCopy = $scope.observerData;
-	},function(response){
+	},function handleError(response){
 		alert("error getting observers");
 	});
 
@@ -193,7 +195,7 @@ app.factory('serverService', function($http){
     	return $http.get(baseApi+'/presenters/'+id).then(handleSuccess, handleError('Error getting presenter'));
     }
     function getAllObserversById(presenterId){
-    	return $http.get(baseApi+'/observers?presenter_id'+presenterId).then(handleSuccess, handleError('Error getting observers'));
+    	return $http.get(baseApi+'/observers?presenter_id='+presenterId).then(handleSuccess, handleError('Error getting observers'));
     }
     //updates
     function UpdateObserver(id, data) {

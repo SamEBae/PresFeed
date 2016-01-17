@@ -46,10 +46,6 @@
         <p ng-repeat="question in questions">
           <input type="radio" class="filled-in" ng-model="questionStatus" value="{{question}}" name="questions" id="filled-in-box{{$index}}" ng-click="questionChanged($index)" checked="questionCheck($index)" />
           <label for="filled-in-box{{$index}}">{{question}}</label>
-          <!-- <label>{{question}}
-            <input type="radio" ng-model="$questionStatus" name="name" value="{{question}}" />
-          </label> -->
-          
         </p>
       </form>
     </div>
