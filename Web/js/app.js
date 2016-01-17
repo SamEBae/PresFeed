@@ -167,6 +167,9 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
                 var notification = new Notification('Notification title', options);
 
                 var sound = notification.sound;
+
+                var audio = new Audio(sound);
+                audio.play();
             }
         }
 
