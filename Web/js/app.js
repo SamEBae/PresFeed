@@ -67,54 +67,34 @@ app.controller('dashboardController', function($scope, $http, serverService){
 		}
 	];
 	$scope.observerDataCopy = $scope.observerData.slice();
-	serverService.getAllObserversById($scope.sessionId).then(function(response){
-		if(response.success===false){
-			$scope.errorMessage = true;
-		}
-        $scope.audienceSize = response.length;
-		$scope.observerData[2].value =0;
-        for(var index in response){
-			if(response[index].status<5){
-				$scope.observerData[response[index].status].value++;
-			}
-		}
-		$scope.observerDataCopy = $scope.observerData;
-	},function handleError(response){
-		alert("error getting observers");
-	});
+
+    serverService.getPresenterById($scope.sessionId).then(function(response){
+        if(response.success===false){
+            $scope.errorMessage = true;
+            return;
+        }
+        serverService.getAllObserversById($scope.sessionId).then(function(response){
+            console.log(response);
+            if(response.success==false){
+                $scope.audienceSize = 0;
+                return;   
+            }
+
+            $scope.audienceSize = response.length;
+            $scope.observerData[2].value =0;
+            for(var index in response){
+                if(response[index].status<5){
+                    $scope.observerData[response[index].status].value++;
+                }
+            }
+            $scope.observerDataCopy = $scope.observerData;
+        },function handleError(response){
+            alert("error getting observers");
+        });
+    });
+	
 
 	$scope.pieMode = true;
-	$scope.exampleData = [
-            {
-                key: "One",
-                value: 5
-            },
-            {
-                key: "Two",
-                value: 2
-            },
-            {
-                key: "Three",
-                value: 9
-            },
-            {
-                key: "Four",
-                value: 7
-            },
-            {
-                key: "Five",
-                value: 4
-            },
-            {
-                key: "Six",
-                value: 3
-            },
-            {
-                key: "Seven",
-                value: 9
-            }
-        ];
-
     $scope.xFunction = function(){
         return function(d) {
             return d.key;
@@ -125,7 +105,6 @@ app.controller('dashboardController', function($scope, $http, serverService){
             return d.value;
         };
     }
-
     $scope.descriptionFunction = function(){
         return function(d){
             return d.key;

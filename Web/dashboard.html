@@ -24,12 +24,12 @@
     </div>
   </nav>
   <section id="main">
-      <div class="row" ng-hide="errorMessage" >
+      <div class="row" ng-if="!errorMessage" >
         <div class="col s12 m6">
           <div class="card blue-grey darken-1">
             <div class="card-content white-text">
               <span class="card-title">Welcome to your class</span>
-              <p>Students can join using this id: <b id="session-id"> {{sessionId}}</b></p>
+              <p>Audience can join using this id: <b id="session-id"> {{sessionId}}</b></p>
             </div>
             <div class="card-action">
             </div>
@@ -37,7 +37,7 @@
         </div>
       </div>
 
-      <div class="row" ng-show="errorMessage" class="hidden">
+      <div class="row" ng-if="errorMessage" class="hidden">
         <div class="col s12 m6">
           <div class="card red">
             <div class="card-content white-text">
@@ -50,8 +50,8 @@
           </div>
         </div>
       </div>
-    <h3 id="your-dashboard" ng-hide="errorMessage">Presentation Statistics</h3>
-    <p>Audience size: {{audienceSize}}</p>
+    <h3 id="your-dashboard" ng-if="!errorMessage">Presentation Statistics</h3>
+    <h4 ng-if="!errorMessage">Audience size: {{audienceSize}}</h4>
     <nvd3-pie-chart
         height="150px"
         width="150px"
@@ -64,7 +64,7 @@
         labelsOutside="false"
         showValues="true"
         labelType="percent"
-        ng-hide="errorMessage">
+        ng-if="!errorMessage">
         <svg></svg>
     </nvd3-pie-chart>
 
