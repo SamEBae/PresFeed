@@ -6,6 +6,15 @@ h1{
 }
 #pres-feedback{
 	text-align: center;
-	margin: 50px;
-	
+	margin: 50px;	
+}
+
+#session-id{
+	font-size: 1.5em;
+	font-style: italic;
+}
+
+#your-dashboard{
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	color: black;
 }
