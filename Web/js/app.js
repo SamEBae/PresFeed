@@ -87,9 +87,13 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
             for(var index in response){
                 if(response[index].status<5){
                     $scope.observerData[response[index].status].value++;
+                    
+                    $scope.totalData[0].values[response[index].status][1]+=1;
                 }
             }
+            console.log($scope.totalData);
             $scope.observerDataCopy = $scope.observerData;
+            $scope.totalDataCopy = $scope.totalData;
         },function handleError(response){
             alert("error getting observers");
         });
@@ -111,6 +115,19 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
             return d.key;
         }
     }
+    $scope.totalDataCopy =$scope.totalData;
+    $scope.totalData = [
+      {
+            key: "Cumulative Return",
+            values: [
+                ["Poor", 0 ],
+                ["Insufficient" , 0 ],
+                ["Average" , 0 ],
+                ["Good" , 0 ],
+                ["Excellent" , 0 ]
+            ]
+        }
+    ];
 }).directive('myCurrentTime', ['$interval', 'dateFilter',
       function($interval, dateFilter) {
         // return the directive link function. (compile function not needed)
