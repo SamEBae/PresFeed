@@ -42,7 +42,10 @@ app.controller('defaultController', function($scope, $http) {
 });
 
 app.controller('dashboardController', function($scope, $http, serverService){
-	$scope.sessionId = 2;
+	//console.log(window.location.href );
+	$scope.url = window.location.href;
+	$scope.sessionId = $scope.url.substring($scope.url.indexOf("?id")+4,$scope.url.length);
+	console.log($scope.sessionId);
 	$scope.observerData = [
 		{
 			key: 'Poor',
@@ -68,6 +71,8 @@ app.controller('dashboardController', function($scope, $http, serverService){
 	$scope.observerDataCopy = $scope.observerData.slice();
 
 	serverService.getAllObserversById($scope.sessionId).then(function(response){
+		if(!response.length){
+		}
 		for(var index in response){
 			if(response[index].status<5){
 				$scope.observerData[response[index].status].value++;
@@ -193,7 +198,7 @@ app.factory('serverService', function($http){
     	return $http.get(baseApi+'/presenters/'+id).then(handleSuccess, handleError('Error getting presenter'));
     }
     function getAllObserversById(presenterId){
-    	return $http.get(baseApi+'/observers?presenter_id'+presenterId).then(handleSuccess, handleError('Error getting observers'));
+    	return $http.get(baseApi+'/observers?presenter_id='+presenterId).then(handleSuccess, handleError('Error getting observers'));
     }
     //updates
     function UpdateObserver(id, data) {
