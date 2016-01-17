@@ -142,14 +142,13 @@ app.controller('joinController', function($scope, $http, $routeParams, serverSer
 		    }
 
 		    serverService.createObserver(data).then(function(response){
-		    	
 		    	$scope.connectedId = response.id;
-		    }, function errorCallback(response){
-		    	
-		    	alert("Invalid Session ID");
-	    		$scope.joinError= true;
-	  			$scope.joining	= false;
 		    });
+		},
+		function errorCallback(response){	
+	    	alert("Invalid Session ID");
+    		$scope.joinError= true;
+  			$scope.joining	= false;
 		})
 	}
 
