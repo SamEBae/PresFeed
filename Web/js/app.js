@@ -77,7 +77,6 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
                 return;
             }
             serverService.getAllObserversById($scope.sessionId).then(function(response){
-                console.log(response);
                 if(response.success==false){
                     $scope.audienceSize = 0;
                     return;   
@@ -118,7 +117,7 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
             return d.key;
         }
     }
-}).directive('myCurrentTime', ['$interval', 'dateFilter',
+}).directive('nvd3PieChart', ['$interval', 'dateFilter',
       function($interval, dateFilter) {
         // return the directive link function. (compile function not needed)
         return function(scope, element, attrs) {
@@ -130,20 +129,20 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
             // Call notification if threshold is broken.
             
             observerDataCopy = scope.observerDataCopy;
-            var totalUsers = observerDataCopy.length;
+            var totalUsers = 0;
             var unsatisfied = 0;
             var limitPercentage = 0.3;
 
             for (var index in observerDataCopy){
-                console.log(observerDataCopy[index]);
-                if(observerDataCopy[index].value < 1) {
-                    unsatisfied++;
+                if(observerDataCopy[index].key == 'Poor' || observerDataCopy[index].key == 'Insufficient') {
+                    unsatisfied += observerDataCopy[index].value;
                 }
+                totalUsers += observerDataCopy[index].value;
             }
 
             console.log("Stats: " + unsatisfied / totalUsers);
 
-            if (unsatisfied / totalUsers > limitPercentage || unsatisfied / totalUsers != 0.8) {
+            if (unsatisfied / totalUsers > limitPercentage) {
                 // Notificaiton here
                 var options = {
                   sound: 'audio/alert.mp3',
@@ -158,7 +157,7 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
           }
 
           // watch the expression, and update the UI on change.
-          scope.$watch(attrs.myCurrentTime, function(value) {
+          scope.$watch(attrs.nvd3PieChart, function(value) {
             format = value;
             checkNotification();
           });
