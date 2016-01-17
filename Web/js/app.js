@@ -45,6 +45,7 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
 	$scope.errorMessage = false;
 	$scope.url 			= window.location.href;
 	$scope.sessionId 	= $scope.url.substring($scope.url.indexOf("?id")+4,$scope.url.length);
+    $scope.audienceSize = 0;
 	$scope.observerData = [
 		{
 			key: 'Poor',
@@ -56,7 +57,7 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
 		},
 		{
 			key: 'Average',
-			value: 1
+			value: 0.1
 		},
 		{
 			key: 'Good',
@@ -68,23 +69,33 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
 		}
 	];
 	$scope.observerDataCopy = $scope.observerData.slice();
-	serverService.getAllObserversById($scope.sessionId).then(function(response){
-		if(response.success===false){
-			$scope.errorMessage = true;
-		}
-		for(var index in response){
-			if(response[index].status<5){
-				$scope.observerData[response[index].status].value++;
-			}
-		}
 
-		$scope.observerDataCopy = $scope.observerData;
-	},function handleError(response){
-		alert("error getting observers");
-	});
+    serverService.getPresenterById($scope.sessionId).then(function(response){
+        if(response.success===false){
+            $scope.errorMessage = true;
+            return;
+        }
+        serverService.getAllObserversById($scope.sessionId).then(function(response){
+            console.log(response);
+            if(response.success==false){
+                $scope.audienceSize = 0;
+                return;   
+            }
 
+            $scope.audienceSize = response.length;
+            $scope.observerData[2].value =0;
+            for(var index in response){
+                if(response[index].status<5){
+                    $scope.observerData[response[index].status].value++;
+                }
+            }
+            $scope.observerDataCopy = $scope.observerData;
+        },function handleError(response){
+            alert("error getting observers");
+        });
+    });
+    
 	$scope.pieMode = true;
-
     $scope.xFunction = function(){
         return function(d) {
             return d.key;
@@ -95,7 +106,6 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
             return d.value;
         };
     }
-
     $scope.descriptionFunction = function(){
         return function(d){
             return d.key;
@@ -157,7 +167,7 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
       }]);
 
 app.controller('joinController', function($scope, $http, $routeParams, serverService){
-	$scope.id; //change later
+	$scope.joinId; //change later
 	$scope.connectedId 	= null;
 	$scope.joined  		= false;
 	$scope.joining 		= false; 
@@ -167,8 +177,13 @@ app.controller('joinController', function($scope, $http, $routeParams, serverSer
 	$scope.joinSession = function(){
 		$scope.joining = true;
 
-		serverService.getPresenterById($scope.id).then(function(response){
-
+		serverService.getPresenterById($scope.joinId).then(function(response){
+			if(response.success===false){
+				alert("Invalid Session ID");
+    			$scope.joinError= true;
+  				$scope.joining	= false;
+  				return;
+			}
 			var presenterId = response.id;
 		    $scope.joined 	= true;
 		    $scope.joinError= false
@@ -176,18 +191,13 @@ app.controller('joinController', function($scope, $http, $routeParams, serverSer
 		    var data = {
 		    	"observer":{
 				      "status":2,
-				      "presenter_id":$scope.id
+				      "presenter_id":$scope.joinId
 				   	}
 		    }
 
 		    serverService.createObserver(data).then(function(response){
 		    	$scope.connectedId = response.id;
 		    });
-		},
-		function errorCallback(response){	
-	    	alert("Invalid Session ID");
-    		$scope.joinError= true;
-  			$scope.joining	= false;
 		})
 	}
 
