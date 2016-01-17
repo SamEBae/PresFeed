@@ -168,8 +168,9 @@ app.controller('dashboardController', function($scope, $http, $interval, serverS
 
                 var sound = notification.sound;
 
-                var audio = new Audio(sound);
-                audio.play();
+                var play = document.getElementById('sound1');
+                play.currentTime=0;
+                play.play();
             }
         }
 
