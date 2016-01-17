@@ -75,6 +75,23 @@ app.controller('dashboardController', function($scope, $http, serverService){
 				$scope.observerData[response[index].status].value++;
 			}
 		}
+
+        // Call notification if threshold is broken.
+        var totalUsers = response.length;
+        var unsatisfied = 0;
+        var limitPercentage = 30;
+
+        for (var index in response){
+            if(response[index].status < 1) {
+                unsatisfied++;
+            }
+        }
+
+        if (unsatisfied / totalUsers > limitPercentage) {
+            // Notificaiton here
+        }
+
+
 		$scope.observerDataCopy = $scope.observerData;
 	},function handleError(response){
 		alert("error getting observers");
