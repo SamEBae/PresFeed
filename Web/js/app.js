@@ -2,25 +2,25 @@ var app = angular.module('app', ['angularUtils.directives.dirPagination','ngRout
 
 app.config(function ($httpProvider) {
   $httpProvider.defaults.headers.common = {};
-  $httpProvider.defaults.headers.post = {};
+  //$httpProvider.defaults.headers.post = {};
   $httpProvider.defaults.headers.put = {};
   $httpProvider.defaults.headers.patch = {};
 });
-app.config(['$routeProvider',
-  function($routeProvider, $httpProvider) {
-    $routeProvider.
-      when('/session', {
-        templateUrl: 'main.html',
-        controller: 'defaultController'
-      }).
-      when('/dashboard', {
-        templateUrl: 'dashboard.html',
-        controller: 'defaultController'
-      }).
-      otherwise({
-        redirectTo: '/session'
-      });
-  }]);
+// app.config(['$routeProvider',
+//   function($routeProvider) {
+//     $routeProvider.
+//       when('/session', {
+//         templateUrl: 'main.html',
+//         controller: 'defaultController'
+//       }).
+//       when('/dashboard', {
+//         templateUrl: 'dashboard.html',
+//         controller: 'defaultController'
+//       }).
+//       otherwise({
+//         redirectTo: '/session'
+//       });
+//   }]);
 
 app.controller('defaultController', function($scope, $http) {
 	$scope.sessionCreated = false;
@@ -88,7 +88,7 @@ app.controller('dashboardController', function($scope, $http){
 
 
 app.controller('joinController', function($scope, $http, $routeParams){
-	$scope.id = 2; //change later
+	$scope.id; //change later
 	$scope.connectedId 	= null;
 	$scope.joined  		= false;
 	$scope.joining 		= false; 
@@ -113,7 +113,6 @@ app.controller('joinController', function($scope, $http, $routeParams){
 		    }
 		    $http.post("http://159.203.9.155/observers/",data).success(function(response, status){
 		    	$scope.connectedId = response.id;
-		    	console.log(response.id)
 		    });
 	  	}, function errorCallback(response) {
 	    	alert("Invalid Session ID");
@@ -135,16 +134,7 @@ app.controller('joinController', function($scope, $http, $routeParams){
 	      data    : data,
 	      headers : { 'Content-Type': 'application/json' }
 	    })
-	    .then(function(response){
-	    	console.log(response);
-	    });
-
-
-	    //$http.put("http://159.203.9.155/observers/2",data).success(function(response, status){});
-	    //$http.put("http://159.203.9.155/observers/5",data).success(function(response, status){});
-		// $http.put("http://159.203.9.155/observers/10",data).success(function(response, status){});
-		// $http.put("http://159.203.9.155/observers/16",data).success(function(response, status){});
-		// $http.put("http://159.203.9.155/observers/"+$scope.connectedId,data).success(function(response, status){});
+	    .then(function(response){});
 	}
 });
 
