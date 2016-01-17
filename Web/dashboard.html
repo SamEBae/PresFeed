@@ -50,6 +50,8 @@
           </div>
         </div>
       </div>
+    <span my-current-time="format"></span>
+    
     <h3 id="your-dashboard" ng-if="!errorMessage">Presentation Statistics</h3>
     <h4 ng-if="!errorMessage">Audience size: {{audienceSize}}</h4>
     <nvd3-pie-chart
@@ -76,5 +78,6 @@
   <script src="js/angularjs-nvd3-directives.js"></script>
   <script src="js/dirPagination.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/notify.js"></script>
 </body>
 </html>

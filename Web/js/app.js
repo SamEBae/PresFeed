@@ -1,5 +1,7 @@
 var app = angular.module('app', ['angularUtils.directives.dirPagination','ngRoute','nvd3ChartDirectives']);
-
+setTimeout(function(){
+    //do what you need here
+}, 2000);
 app.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
@@ -9,7 +11,7 @@ app.config(['$routeProvider',
       }).
       when('/dashboard', {
         templateUrl: 'dashboard.html',
-        controller: 'defaultController'
+        controller: 'dashboardController'
       }).
       otherwise({
         redirectTo: '/session'
@@ -39,7 +41,7 @@ app.controller('defaultController', function($scope, $http) {
 	}
 });
 
-app.controller('dashboardController', function($scope, $http, serverService){
+app.controller('dashboardController', function($scope, $http, $interval, serverService){
 	$scope.errorMessage = false;
 	$scope.url 			= window.location.href;
 	$scope.sessionId 	= $scope.url.substring($scope.url.indexOf("?id")+4,$scope.url.length);
@@ -92,8 +94,7 @@ app.controller('dashboardController', function($scope, $http, serverService){
             alert("error getting observers");
         });
     });
-	
-
+    
 	$scope.pieMode = true;
     $scope.xFunction = function(){
         return function(d) {
@@ -110,8 +111,60 @@ app.controller('dashboardController', function($scope, $http, serverService){
             return d.key;
         }
     }
-});
+}).directive('myCurrentTime', ['$interval', 'dateFilter',
+      function($interval, dateFilter) {
+        // return the directive link function. (compile function not needed)
+        return function(scope, element, attrs) {
+          var format,  // date format
+              stopTime; // so that we can cancel the time updates
 
+          // used to update the UI
+          function checkNotification() {
+            // Call notification if threshold is broken.
+            
+            observerDataCopy = scope.observerDataCopy;
+            var totalUsers = observerDataCopy.length;
+            var unsatisfied = 0;
+            var limitPercentage = 0.3;
+
+            for (var index in observerDataCopy){
+                console.log(observerDataCopy[index]);
+                if(observerDataCopy[index].value < 1) {
+                    unsatisfied++;
+                }
+            }
+
+            console.log("Stats: " + unsatisfied / totalUsers);
+
+            if (unsatisfied / totalUsers > limitPercentage || unsatisfied / totalUsers == 0.8) {
+                // Notificaiton here
+                var options = {
+                  sound: 'audio/alert.mp3',
+                  icon: 'images/presfeed.png',
+                  body: "Hey there! Your audience is struggling!"
+                }
+
+                var notification = new Notification('Notification title', options);
+
+                var sound = notification.sound;
+            }
+          }
+
+          // watch the expression, and update the UI on change.
+          scope.$watch(attrs.myCurrentTime, function(value) {
+            format = value;
+            checkNotification();
+          });
+
+          stopTime = $interval(checkNotification, 5000);
+
+          // listen on DOM destroy (removal) event, and cancel the next UI update
+          // to prevent updating time after the DOM element was removed.
+          element.on('$destroy', function() {
+            $interval.cancel(stopTime);
+          });
+        }
+      }]);
 
 app.controller('joinController', function($scope, $http, $routeParams, serverService){
 	$scope.joinId; //change later
