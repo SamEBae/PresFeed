@@ -8,21 +8,32 @@
 <link rel="stylesheet" media="all" href="css/nv.d3.css">
 <base target="_blank">
 <style>
-h1.hidden {
-    display: none;
-    }
+.vertical-center {
+  display: flex;
+  align-items: center;
+}
 </style>
 </head>
 <body data-ng-controller="defaultController">
   <section id="main">
-  	<button ng-click="createSession()">Create Session</button>
-    
-  	<h1 ng-show="sessionCreated">
-    <p class="text-center">
-      <label>Your session ID is: {{sessionId}}</label>
-      <br>
-  	 <a ng-href="dashboard.html?id={{sessionId}}" target="_blank">Go to session</a>
-     </p></h1>
+    <div class="container" role="main">
+      <div class="row">
+        <div class="col-sm-12 padding-top" id="create-button">
+        	<button class="btn btn-lg center-block  vertical-center btn-primary" ng-click="createSession()">Create Session</button>
+        	<h1 ng-show="sessionCreated">
+          <p class="text-center">
+            <label>
+            <font color="black">Your session ID is: </font>
+            <font color = "red"> {{sessionId}} </font>
+            </font>
+            </label>
+            <br>
+        	   <a ng-href="dashboard.html?id={{sessionId}}" target="_blank">Go to session</a>
+          </p>
+          </h1>
+        </div>
+      </div>
+    </div>
   </section>
   <script src="js/angular.min.js"></script>
   <script src="js/angular-route.js"></script>
