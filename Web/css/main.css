@@ -10,5 +10,19 @@ h1{
 }
 #pres-feedback{
 	text-align: center;
+<<<<<<< HEAD
 	margin: 50px;
+=======
+	margin: 50px;	
+}
+
+#session-id{
+	font-size: 1.5em;
+	font-style: italic;
+}
+
+#your-dashboard{
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	color: black;
+>>>>>>> e70861a737978b22059542618227219c68c4876f
 }

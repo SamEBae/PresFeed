@@ -24,6 +24,33 @@
     </div>
   </nav>
   <section id="main">
+      <div class="row" ng-hide="errorMessage">
+        <div class="col s12 m6">
+          <div class="card blue-grey darken-1">
+            <div class="card-content white-text">
+              <span class="card-title">Welcome to your class</span>
+              <p>Students can join using this id: <b id="session-id"> {{sessionId}}</b></p>
+            </div>
+            <div class="card-action">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" ng-show="errorMessage">
+        <div class="col s12 m6">
+          <div class="card red">
+            <div class="card-content white-text">
+              <span class="card-title">Error invalid session</span>
+              <p>Students can join using this id:</p>
+            </div>
+            <div class="card-action">
+              <a href="#">Create a session</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    <h3 id="your-dashboard">Your dashboard</h3>
     <nvd3-pie-chart
         height="200"
         width="200"
@@ -35,9 +62,10 @@
         labelsOutside="false"
         showValues="true"
         labelType="percent"
-        ng-show="pieMode">
+        ng-hide="errorMessage">
         <svg></svg>
     </nvd3-pie-chart>
+
   </section>
   <script src="js/angular.min.js"></script>
   <script src="js/angular-route.js"></script>
