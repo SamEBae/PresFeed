@@ -1,26 +1,20 @@
 var app = angular.module('app', ['angularUtils.directives.dirPagination','ngRoute','nvd3ChartDirectives']);
 
-app.config(function ($httpProvider) {
-  $httpProvider.defaults.headers.common = {};
-  //$httpProvider.defaults.headers.post = {};
-  $httpProvider.defaults.headers.put = {};
-  $httpProvider.defaults.headers.patch = {};
-});
-// app.config(['$routeProvider',
-//   function($routeProvider) {
-//     $routeProvider.
-//       when('/session', {
-//         templateUrl: 'main.html',
-//         controller: 'defaultController'
-//       }).
-//       when('/dashboard', {
-//         templateUrl: 'dashboard.html',
-//         controller: 'defaultController'
-//       }).
-//       otherwise({
-//         redirectTo: '/session'
-//       });
-//   }]);
+app.config(['$routeProvider',
+  function($routeProvider) {
+    $routeProvider.
+      when('/session', {
+        templateUrl: 'main.html',
+        controller: 'defaultController'
+      }).
+      when('/dashboard', {
+        templateUrl: 'dashboard.html',
+        controller: 'defaultController'
+      }).
+      otherwise({
+        redirectTo: '/session'
+      });
+  }]);
 
 app.controller('defaultController', function($scope, $http) {
 	$scope.sessionCreated = false;
@@ -35,36 +29,72 @@ app.controller('defaultController', function($scope, $http) {
 	}
 });
 
-app.controller('dashboardController', function($scope, $http){
+app.controller('dashboardController', function($scope, $http, serverService){
+	$scope.sessionId = 2;
+	$scope.observerData = [
+		{
+			key: 'Poor',
+			value: 0
+		},
+		{
+			key: 'Insufficient',
+			value: 0
+		},
+		{
+			key: 'Average',
+			value: 1
+		},
+		{
+			key: 'Good',
+			value: 0
+		},
+		{
+			key: 'Excellent',
+			value: 0
+		}
+	];
+	$scope.observerDataCopy = $scope.observerData.slice();
+
+	serverService.getAllObserversById($scope.sessionId).then(function(response){
+		for(var index in response){
+			if(response[index].status<5){
+				$scope.observerData[response[index].status].value++;
+			}
+		}
+		$scope.observerDataCopy = $scope.observerData;
+	},function(response){
+		alert("error getting observers");
+	});
+
 	$scope.pieMode = true;
 	$scope.exampleData = [
             {
                 key: "One",
-                y: 5
+                value: 5
             },
             {
                 key: "Two",
-                y: 2
+                value: 2
             },
             {
                 key: "Three",
-                y: 9
+                value: 9
             },
             {
                 key: "Four",
-                y: 7
+                value: 7
             },
             {
                 key: "Five",
-                y: 4
+                value: 4
             },
             {
                 key: "Six",
-                y: 3
+                value: 3
             },
             {
                 key: "Seven",
-                y: 9
+                value: 9
             }
         ];
 
@@ -75,7 +105,7 @@ app.controller('dashboardController', function($scope, $http){
     }
     $scope.yFunction = function(){
         return function(d) {
-            return d.y;
+            return d.value;
         };
     }
 
@@ -87,7 +117,7 @@ app.controller('dashboardController', function($scope, $http){
 });
 
 
-app.controller('joinController', function($scope, $http, $routeParams){
+app.controller('joinController', function($scope, $http, $routeParams, serverService){
 	$scope.id; //change later
 	$scope.connectedId 	= null;
 	$scope.joined  		= false;
@@ -98,10 +128,9 @@ app.controller('joinController', function($scope, $http, $routeParams){
 	$scope.joinSession = function(){
 		$scope.joining = true;
 
-		console.log('http://159.203.9.155/presenters/'+$scope.id);
-		
-		$http.get('http://159.203.9.155/presenters/'+$scope.id).then(function successCallback(response) {
-		    var presenterId = response.id;
+		serverService.getPresenterById($scope.id).then(function(response){
+
+			var presenterId = response.id;
 		    $scope.joined 	= true;
 		    $scope.joinError= false
 		    $scope.joining	= false;
@@ -111,14 +140,17 @@ app.controller('joinController', function($scope, $http, $routeParams){
 				      "presenter_id":$scope.id
 				   	}
 		    }
-		    $http.post("http://159.203.9.155/observers/",data).success(function(response, status){
+
+		    serverService.createObserver(data).then(function(response){
+		    	
 		    	$scope.connectedId = response.id;
+		    }, function errorCallback(response){
+		    	
+		    	alert("Invalid Session ID");
+	    		$scope.joinError= true;
+	  			$scope.joining	= false;
 		    });
-	  	}, function errorCallback(response) {
-	    	alert("Invalid Session ID");
-	    	$scope.joinError= true;
-	  		$scope.joining	= false;
-	  	});
+		})
 	}
 
 	$scope.questionChanged = function(index){
@@ -127,15 +159,49 @@ app.controller('joinController', function($scope, $http, $routeParams){
 		    	"status":index
 		   	}
 	    };
-
-	    $http({
-	      method  : "PUT",
-	      url     : 'http://159.203.9.155/observers/'+$scope.connectedId,
-	      data    : data,
-	      headers : { 'Content-Type': 'application/json' }
-	    })
-	    .then(function(response){});
+	    serverService.UpdateObserver($scope.connectedId, data);
 	}
 });
 
+app.factory('serverService', function($http){
+	var service = {};
+    var baseApi = 'http://159.203.9.155';
 
+    service.getPresenterById 	 = getPresenterById;
+    service.getAllObserversById  = getAllObserversById; 
+    service.UpdateObserver 	 = UpdateObserver;
+    service.createObserver 	 = createObserver;
+   	
+    return service;
+    //creates
+    function createObserver(data){
+    	return $http.post(baseApi+"/observers/",data).then(handleSuccess, handleError('Error getting presenter'));
+    }
+    //gets
+    function getPresenterById(id){
+    	return $http.get(baseApi+'/presenters/'+id).then(handleSuccess, handleError('Error getting presenter'));
+    }
+    function getAllObserversById(presenterId){
+    	return $http.get(baseApi+'/observers?presenter_id'+presenterId).then(handleSuccess, handleError('Error getting observers'));
+    }
+    //updates
+    function UpdateObserver(id, data) {
+    	return $http({
+	      method  : "PUT",
+	      url     : baseApi + '/observers/' + id,
+	      data    : data,
+	      headers : { 'Content-Type': 'application/json' }
+	    }).then(handleSuccess, handleError('Error updating observer'));
+    }
+
+    function handleSuccess(res) {
+        return res.data;
+    }
+ 
+    function handleError(error) {
+        return function () {
+            return { success: false, message: error };
+        };
+    }
+
+});
