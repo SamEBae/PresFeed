@@ -24,7 +24,7 @@ app.controller('defaultController', function($scope, $http) {
     $scope.showHide 	  = false;
 
 	$scope.createSession = function(){
-        var session_url = 'http://159.203.9.155/presenters'
+        var session_url = 'https://presfeed-api.herokuapp.com/presenters'
         // create session
         $http.post(session_url)
 	 	.success(function(response){
@@ -237,7 +237,7 @@ app.controller('joinController', function($scope, $http, $routeParams, serverSer
 
 app.factory('serverService', function($http){
 	var service = {};
-    var baseApi = 'http://159.203.9.155';
+    var baseApi = 'https://presfeed-api.herokuapp.com';
 
     service.getPresenterById 	 = getPresenterById;
     service.getAllObserversById  = getAllObserversById; 
